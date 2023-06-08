@@ -3,8 +3,8 @@ import java.util.Comparator;
 import java.util.Scanner;
 
 public class Array<T> {
-    private Object[] array;
-    private int size;
+    private final Object[] array;
+    private final int size;
     public Array(int size) {
         this.size = size;
         array = new Object[size];
@@ -14,7 +14,11 @@ public class Array<T> {
         Scanner scanner = new Scanner(System.in);
         for (int i = 0; i < array.length; i++) {
             System.out.print("Введите элемент [" + i + "]: ");
-            array[i] = (T) scanner.next();
+            if (array[i] instanceof String) {
+                array[i] = (T) scanner.next();
+            } else if (array[i] instanceof Integer) {
+                array[i] = (T) Integer.valueOf(scanner.nextInt());
+            }
         }
     }
 
@@ -34,7 +38,7 @@ public class Array<T> {
     }
 
     public T findMax(Comparator<T> comparator) {
-        if (array == null || array.length == 0) {
+        if (array.length == 0) {
             return null;
         }
 
@@ -49,7 +53,7 @@ public class Array<T> {
     }
 
     public T findMin(Comparator<T> comparator) {
-        if (array == null || array.length == 0) {
+        if (array.length == 0) {
             return null;
         }
 
@@ -66,8 +70,8 @@ public class Array<T> {
 
     public double calculateAverage() {
         double sum = 0.0;
-        for (int i = 0; i < array.length; i++) {
-            sum += Double.parseDouble(array[i].toString());
+        for (Object o : array) {
+            sum += Double.parseDouble(o.toString());
         }
         return sum / array.length;
     }
@@ -112,7 +116,7 @@ public class Array<T> {
     }
 
     public static void main(String[] args) {
-        Array<String> array = new Array<>(5);
+        Array<Integer> array = new Array<>(5);
 
         array.fillRandomly();
         array.fillFromKeyboard();
@@ -121,11 +125,11 @@ public class Array<T> {
         array.display();
 
         // Поиск максимального значения
-        String max = array.findMax(Comparator.naturalOrder());
+        Integer max = array.findMax(Comparator.naturalOrder());
         System.out.println("Максимальное значение: " + max);
 
         // Поиск минимального значения
-        String min = array.findMin(Comparator.naturalOrder());
+        Integer min = array.findMin(Comparator.naturalOrder());
         System.out.println("Минимальное значение: " + min);
 
         // Вычисление среднего значения
@@ -145,9 +149,9 @@ public class Array<T> {
         // Поиск значения
         Scanner scanner = new Scanner(System.in);
         System.out.print("Введите значение для бинарного поиска: ");
-        String searchKey = scanner.nextLine().trim();
+        Integer searchKey = scanner.nextInt();
         array.sortAscending(); // Сортировка массива перед поиском
-        Comparator<String> comparator = Comparator.naturalOrder();
+        Comparator<Integer> comparator = Comparator.naturalOrder();
         int searchResult = array.binarySearch(searchKey, comparator);
         if (searchResult >= 0) {
             System.out.println("Значение найдено на позиции " + searchResult);
@@ -160,8 +164,7 @@ public class Array<T> {
         int index = scanner.nextInt();
 
         System.out.println("Введите новое значение:");
-        scanner.nextLine(); // Очистка буфера после считывания индекса
-        String newValue = scanner.nextLine();
+        Integer newValue = scanner.nextInt();
 
         array.replaceValue(index, newValue);
         array.display();

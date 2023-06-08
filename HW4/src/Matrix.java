@@ -2,11 +2,10 @@ import java.util.Scanner;
 import java.util.Random;
 
 class Matrix<T extends Number> {
-    private T[][] matrix;
-    private int rows;
-    private int columns;
+    private final T[][] matrix;
+    private final int rows;
+    private final int columns;
 
-    @SuppressWarnings("unchecked")
     public Matrix(int rows, int columns) {
         this.rows = rows;
         this.columns = columns;
@@ -36,42 +35,8 @@ class Matrix<T extends Number> {
         }
     }
 
-    public void add(Matrix<T> other) {
-        if (rows != other.rows || columns != other.columns) {
-            throw new IllegalArgumentException("Matrix dimensions must be the same for addition.");
-        }
-
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                Number a = matrix[i][j];
-                Number b = other.matrix[i][j];
-                if (a instanceof Double || b instanceof Double) {
-                    matrix[i][j] = (T) Double.valueOf(a.doubleValue() + b.doubleValue());
-                } else if (a instanceof Float || b instanceof Float) {
-                    matrix[i][j] = (T) Float.valueOf(a.floatValue() + b.floatValue());
-                } else if (a instanceof Long || b instanceof Long) {
-                    matrix[i][j] = (T) Long.valueOf(a.longValue() + b.longValue());
-                } else {
-                    matrix[i][j] = (T) Integer.valueOf(a.intValue() + b.intValue());
-                }
-            }
-        }
-    }
-
     private T parseValue(String input) {
-        Class<?> type = Double.class; // Default element type is Double
-
-        if (type == Integer.class) {
-            return (T) Integer.valueOf(input);
-        } else if (type == Double.class) {
-            return (T) Double.valueOf(input);
-        } else if (type == Float.class) {
-            return (T) Float.valueOf(input);
-        } else if (type == Long.class) {
-            return (T) Long.valueOf(input);
-        } else {
-            throw new IllegalArgumentException("Unsupported type: " + type.getSimpleName());
-        }
+        return (T) Double.valueOf(input);
     }
     public void display() {
         for (int i = 0; i < rows; i++) {
@@ -81,6 +46,22 @@ class Matrix<T extends Number> {
             System.out.println();
         }
     }
+    public Matrix<Double> add(Matrix<T> other) {
+        if (rows != other.rows || columns != other.columns) {
+            throw new IllegalArgumentException("Matrices must have the same dimensions.");
+        }
+
+        Matrix<T> result = new Matrix<>(rows, columns);
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                result.matrix[i][j] = (T) (Double) (matrix[i][j].doubleValue() + other.matrix[i][j].doubleValue());
+            }
+        }
+
+        return (Matrix<Double>) result;
+    }
+
 
     public Matrix<Double> subtract(Matrix<T> other) {
         if (rows != other.rows || columns != other.columns) {
@@ -186,9 +167,9 @@ class Matrix<T extends Number> {
         matrix2.fillFromKeyboard();
         matrix2.display();
 
-        matrix1.add(matrix2);
-        matrix1.display();
+        Matrix<Double> matrixSum = matrix1.add(matrix2);
         System.out.println("Matrix Sum:");
+        matrixSum.display();
         System.out.println();
 
         Matrix<Double> matrixDifference = matrix1.subtract(matrix2);

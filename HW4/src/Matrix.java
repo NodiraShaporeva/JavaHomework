@@ -24,20 +24,22 @@ class Matrix<T extends Number> {
         }
     }
 
+    private T parseValue(String input) {
+        return (T) Double.valueOf(input);
+    }
+
     public void fillRandomly() {
         Random random = new Random();
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 // Generate random integer between 1 and 100
-                matrix[i][j] = parseValue(Integer.toString(random.nextInt(100) + 1));
+//                matrix[i][j] = parseValue(Integer.toString(random.nextInt(100) + 1));
+                matrix[i][j] = (T) (Number) (random.nextDouble(100) + 1);
             }
         }
     }
 
-    private T parseValue(String input) {
-        return (T) Double.valueOf(input);
-    }
     public void display() {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
@@ -46,7 +48,8 @@ class Matrix<T extends Number> {
             System.out.println();
         }
     }
-    public Matrix<Double> add(Matrix<T> other) {
+
+    public Matrix<T> add(Matrix<T> other) {
         if (rows != other.rows || columns != other.columns) {
             throw new IllegalArgumentException("Matrices must have the same dimensions.");
         }
@@ -55,15 +58,16 @@ class Matrix<T extends Number> {
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                result.matrix[i][j] = (T) (Double) (matrix[i][j].doubleValue() + other.matrix[i][j].doubleValue());
+                result.matrix[i][j] =
+                        (T) (Number) (matrix[i][j].doubleValue() + other.matrix[i][j].doubleValue());
             }
         }
 
-        return (Matrix<Double>) result;
+        return result;
     }
 
 
-    public Matrix<Double> subtract(Matrix<T> other) {
+    public Matrix<T> subtract(Matrix<T> other) {
         if (rows != other.rows || columns != other.columns) {
             throw new IllegalArgumentException("Matrices must have the same dimensions.");
         }
@@ -72,14 +76,15 @@ class Matrix<T extends Number> {
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                result.matrix[i][j] = (T) (Double) (matrix[i][j].doubleValue() - other.matrix[i][j].doubleValue());
+                result.matrix[i][j] =
+                        (T) (Number) (matrix[i][j].doubleValue() - other.matrix[i][j].doubleValue());
             }
         }
 
-        return (Matrix<Double>) result;
+        return result;
     }
 
-    public Matrix<Double> multiply(Matrix<T> other) {
+    public Matrix<T> multiply(Matrix<T> other) {
         if (columns != other.rows) {
             throw new IllegalArgumentException("Number of columns in the first matrix must be equal to the number of rows in the second matrix.");
         }
@@ -94,14 +99,14 @@ class Matrix<T extends Number> {
                     sum += matrix[i][k].doubleValue() * other.matrix[k][j].doubleValue();
                 }
 
-                result.matrix[i][j] = (T) (Double) sum;
+                result.matrix[i][j] = (T) (Number) sum;
             }
         }
 
-        return (Matrix<Double>) result;
+        return result;
     }
 
-    public Matrix<Double> divide(Matrix<T> other) {
+    public Matrix<T> divide(Matrix<T> other) {
         if (rows != other.rows || columns != other.columns) {
             throw new IllegalArgumentException("Matrices must have the same dimensions.");
         }
@@ -110,11 +115,11 @@ class Matrix<T extends Number> {
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                result.matrix[i][j] = (T) (Double) (matrix[i][j].doubleValue() / other.matrix[i][j].doubleValue());
+                result.matrix[i][j] = (T) (Number) (matrix[i][j].doubleValue() / other.matrix[i][j].doubleValue());
             }
         }
 
-        return (Matrix<Double>) result;
+        return result;
     }
 
     public T findMax() {

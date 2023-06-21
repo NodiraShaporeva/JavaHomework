@@ -2,7 +2,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class StreamSample {
+public class ProjectorStreamExample {
     public static void main(String[] args) {
         List<Projector> projectors = Arrays.asList(
                 new Projector("Epson", 2020, 999.99, "Epson"),
@@ -52,5 +52,17 @@ public class StreamSample {
         projectors.stream()
                 .sorted(Comparator.comparingInt(Projector::year).reversed())
                 .forEach(System.out::println);
+    }
+}
+record Projector(String name, int year, double price, String manufacturer) {
+
+    @Override
+    public String toString() {
+        return "Projector{" +
+                "name='" + name + '\'' +
+                ", year=" + year +
+                ", price=" + price +
+                ", manufacturer='" + manufacturer + '\'' +
+                '}';
     }
 }

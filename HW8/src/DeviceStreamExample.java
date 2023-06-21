@@ -1,7 +1,7 @@
 import java.util.Arrays;
 import java.util.List;
 
-public class StreamExample {
+public class DeviceStreamExample {
     public static void main(String[] args) {
         List<Device> devices = Arrays.asList(
                 new Device("Phone", 2020, 999.99, "Black", "Mobile"),
@@ -44,5 +44,18 @@ public class StreamExample {
         devices.stream()
                 .filter(d -> d.year() >= startYear && d.year() <= endYear)
                 .forEach(System.out::println);
+    }
+}
+record Device(String name, int year, double price, String color, String type) {
+
+    @Override
+    public String toString() {
+        return "Device{" +
+                "name='" + name + '\'' +
+                ", year=" + year +
+                ", price=" + price +
+                ", color='" + color + '\'' +
+                ", type='" + type + '\'' +
+                '}';
     }
 }

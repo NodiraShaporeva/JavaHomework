@@ -6,8 +6,8 @@ import java.util.Random;
 public class Task2 {
     public static void main(String[] args) {
         String filePath = "sourceNums.txt";
-        String primeNumsFile = "primeNumsFile.txt";
-        String factorialsFile = "factorialsFile.txt";
+        String primeNumsFile = "primeNums.txt";
+        String factorialsFile = "factorials.txt";
 
         var t1 = new Thread(() -> fillFileWithRandomNums(filePath));
 

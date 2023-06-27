@@ -31,7 +31,7 @@ public class Task4 {
             return;
         }
 
-        File mergedFile = new File("merged_file.txt");
+        File mergedFile = new File("C:\\Users\\NODIRA\\Downloads\\1\\merged_file.txt");
         File forbiddenWordsFile = new File("C:\\Users\\NODIRA\\Downloads\\1\\forbidden_words.txt");
 
         SearchFilesThread searchFilesThread = new SearchFilesThread(sourceDir, searchWord, mergedFile);
@@ -151,7 +151,7 @@ class RemoveForbiddenWordsThread extends Thread {
         List<String> forbiddenWords = readForbiddenWords(forbiddenWordsFile);
 
         try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-             BufferedWriter writer = new BufferedWriter(new FileWriter("output_file.txt"))) {
+             BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\NODIRA\\Downloads\\1\\output_file.txt"))) {
 
             String line;
             while ((line = reader.readLine()) != null) {

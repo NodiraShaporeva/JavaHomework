@@ -22,7 +22,7 @@ public class Task1 {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            System.out.println("Avg = " + calculateAvg(array));
+            System.out.println("Average = " + calculateAvg(array));
         });
 
         t1.start();

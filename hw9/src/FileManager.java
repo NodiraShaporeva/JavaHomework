@@ -43,22 +43,22 @@ public class FileManager extends Thread {
     private void initDirs() {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         try {
-            System.out.println("Existing path");
+            System.out.println("Existing path: ");
             String sourceDir = reader.readLine();
-            System.out.println("Target path");
+            System.out.println("Target path: ");
             String targetPath = reader.readLine();
 
             File sourceDirectory = new File(sourceDir);
             File targetDirectory = new File(targetPath);
 
             if (!sourceDirectory.exists() || !sourceDirectory.isDirectory()) {
-                System.out.println("Not dir, not exists");
+                System.out.println("This is not directory or such directory does not exists");
                 return;
             }
             copyDirectory(sourceDirectory, targetDirectory);
 
             System.out.println("files copied: " + FileManager.filesCopied);
-            System.out.println("dirs copied: " + FileManager.directoriesCopied);
+            System.out.println("directories copied: " + FileManager.directoriesCopied);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

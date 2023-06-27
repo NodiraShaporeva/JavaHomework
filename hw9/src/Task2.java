@@ -5,180 +5,114 @@ import java.util.Random;
 
 public class Task2 {
     public static void main(String[] args) {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        String filePath = null;
+        String filePath = "sourceNums.txt";
+        String primeNumsFile = "primeNumsFile.txt";
+        String factorialsFile = "factorialsFile.txt";
 
-        try {
-            System.out.print("Введите путь к файлу: ");
-            filePath = reader.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
+        var t1 = new Thread(() -> fillFileWithRandomNums(filePath));
+
+        var t2 = new Thread(() -> {
             try {
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                t1.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
-        }
+            List<Integer> primeNums = findPrimeNumsInFile(filePath);
+            writeNumsToFile(primeNums, primeNumsFile);
+        });
 
-        assert filePath != null;
-        File inputFile = new File(filePath);
-        File primeOutputFile = new File("prime_numbers.txt");
-        File factorialOutputFile = new File("factorials.txt");
-
-        RandomNumberThread randomNumberThread = new RandomNumberThread(inputFile);
-        PrimeNumberThread primeNumberThread = new PrimeNumberThread(inputFile, primeOutputFile);
-        FactorialThread factorialThread = new FactorialThread(inputFile, factorialOutputFile);
-
-        randomNumberThread.start();
-        primeNumberThread.start();
-        factorialThread.start();
-
-        try {
-            randomNumberThread.join();
-            primeNumberThread.join();
-            factorialThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("Статистика выполненных операций:");
-        System.out.println("Сгенерировано случайных чисел: " + randomNumberThread.getNumberCount());
-        System.out.println("Найдено простых чисел: " + primeNumberThread.getPrimeCount());
-        System.out.println("Вычислено факториалов: " + factorialThread.getFactorialCount());
-    }
-}
-
-class RandomNumberThread extends Thread {
-    private final File inputFile;
-    private int numberCount;
-
-    public RandomNumberThread(File inputFile) {
-        this.inputFile = inputFile;
-    }
-
-    public int getNumberCount() {
-        return numberCount;
-    }
-
-    @Override
-    public void run() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(inputFile))) {
-            Random random = new Random();
-            int numberLimit = 100;
-            int numbersToGenerate = 1000;
-
-            for (int i = 0; i < numbersToGenerate; i++) {
-                int randomNumber = random.nextInt(numberLimit);
-                writer.write(String.valueOf(randomNumber));
-                writer.newLine();
+        var t3 = new Thread(() -> {
+            try {
+                t1.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
+            List<Long> factorialsNums = calculateFactorials(filePath);
+            writeNumsToFile(factorialsNums, factorialsFile);
+        });
 
-            numberCount = numbersToGenerate;
-            System.out.println("Сгенерировано случайных чисел: " + numberCount);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-}
-
-class PrimeNumberThread extends Thread {
-    private final File inputFile;
-    private final File outputFile;
-    private int primeCount;
-
-    public PrimeNumberThread(File inputFile, File outputFile) {
-        this.inputFile = inputFile;
-        this.outputFile = outputFile;
+        t1.start();
+        t2.start();
+        t3.start();
     }
 
-    public int getPrimeCount() {
-        return primeCount;
-    }
-
-    @Override
-    public void run() {
-        List<Integer> primeNumbers = new ArrayList<>();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-             BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
-
+    private static List<Integer> findPrimeNumsInFile(String filePath) {
+        List<Integer> primeNums = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                int number = Integer.parseInt(line);
-                if (isPrime(number)) {
-                    primeNumbers.add(number);
-                    writer.write(String.valueOf(number));
-                    writer.newLine();
+                int num = Integer.parseInt(line);
+                if (isPrime(num)) {
+                    primeNums.add(num);
                 }
             }
-
-            primeCount = primeNumbers.size();
-            System.out.println("Найдено простых чисел: " + primeCount);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return primeNums;
+    }
+
+
+
+    private static void fillFileWithRandomNums(String filePath){
+        try (PrintWriter writer = new PrintWriter(filePath)) {
+            Random r = new Random();
+            for(int i = 0; i < 10; i++){
+                writer.println(r.nextInt(100));
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private boolean isPrime(int number) {
-        if (number < 2) {
+
+
+    private static boolean isPrime(int num){
+        if (num < 2){
             return false;
         }
-
-        for (int i = 2; i <= Math.sqrt(number); i++) {
-            if (number % i == 0) {
+        for (int i = 2; i <= Math.sqrt(num); i++){
+            if (num % i == 0){
                 return false;
             }
         }
 
         return true;
     }
-}
 
-class FactorialThread extends Thread {
-    private final File inputFile;
-    private final File outputFile;
-    private int factorialCount;
-
-    public FactorialThread(File inputFile, File outputFile) {
-        this.inputFile = inputFile;
-        this.outputFile = outputFile;
-    }
-
-    public int getFactorialCount() {
-        return factorialCount;
-    }
-
-    @Override
-    public void run() {
+    private static List<Long> calculateFactorials(String filePath){
         List<Long> factorials = new ArrayList<>();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-             BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
-
+        try(BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
-            while ((line = reader.readLine()) != null) {
-                int number = Integer.parseInt(line);
-                long factorial = computeFactorial(number);
+            while ((line = reader.readLine()) != null){
+                int num = Integer.parseInt(line);
+                long factorial = calculateFactorial(num);
                 factorials.add(factorial);
-                writer.write(String.valueOf(factorial));
-                writer.newLine();
             }
-
-            factorialCount = factorials.size();
-            System.out.println("Вычислено факториалов: " + factorialCount);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
+        return factorials;
     }
 
-    private long computeFactorial(int number) {
+    private static long calculateFactorial(int num) {
+        if(num == 0 || num == 1){
+            return 1;
+        }
         long factorial = 1;
-
-        for (int i = 2; i <= number; i++) {
+        for (int i = 2; i <= num; i++){
             factorial *= i;
         }
-
         return factorial;
+    }
+
+    private static <T extends Number> void writeNumsToFile (List<T> nums, String filePath){
+        try (PrintWriter writer = new PrintWriter(filePath)){
+            for(T num : nums){
+                writer.println(num);
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
